@@ -1,3 +1,5 @@
+// ================= SCROLL ANIMATION =================
+
 const observer = new IntersectionObserver((entries) => {
 
     entries.forEach((entry) => {
@@ -13,13 +15,37 @@ const observer = new IntersectionObserver((entries) => {
 });
 
 document.querySelectorAll("section").forEach((section) => {
+
     section.classList.add("hidden");
+
     observer.observe(section);
+
 });
 
-// ================= Active Navigation =================
+
+// ================= TOAST NOTIFICATION =================
+
+function showToast(message, type) {
+
+    const toast = document.getElementById("toast");
+
+    toast.textContent = message;
+
+    toast.className = `show ${type}`;
+
+    setTimeout(() => {
+
+        toast.className = "";
+
+    }, 3000);
+
+}
+
+
+// ================= ACTIVE NAVIGATION =================
 
 const sections = document.querySelectorAll("section");
+
 const navLinks = document.querySelectorAll(".nav-menu a");
 
 window.addEventListener("scroll", () => {
@@ -31,7 +57,9 @@ window.addEventListener("scroll", () => {
         const sectionTop = section.offsetTop - 120;
 
         if (window.scrollY >= sectionTop) {
+
             current = section.getAttribute("id");
+
         }
 
     });
@@ -41,12 +69,15 @@ window.addEventListener("scroll", () => {
         link.classList.remove("active");
 
         if (link.getAttribute("href") === "#" + current) {
+
             link.classList.add("active");
+
         }
 
     });
 
 });
+
 
 // ================= BACK TO TOP =================
 
@@ -54,29 +85,38 @@ const backToTop = document.getElementById("backToTop");
 
 window.addEventListener("scroll", () => {
 
-    if(window.scrollY > 400){
+    if (backToTop) {
 
-        backToTop.style.display = "flex";
+        if (window.scrollY > 400) {
 
-    }else{
+            backToTop.style.display = "flex";
 
-        backToTop.style.display = "none";
+        } else {
+
+            backToTop.style.display = "none";
+
+        }
 
     }
 
 });
 
-backToTop.addEventListener("click", () => {
+if (backToTop) {
 
-    window.scrollTo({
+    backToTop.addEventListener("click", () => {
 
-        top:0,
+        window.scrollTo({
 
-        behavior:"smooth"
+            top: 0,
+
+            behavior: "smooth"
+
+        });
 
     });
 
-});
+}
+
 
 // ================= PRELOADER =================
 
@@ -89,9 +129,62 @@ window.addEventListener("load", function () {
         preloader.style.opacity = "0";
 
         setTimeout(() => {
+
             preloader.remove();
+
         }, 500);
 
     }
 
 });
+
+
+// ================= EMAILJS CONTACT FORM =================
+
+const contactForm = document.getElementById("contact-form");
+
+if (contactForm) {
+
+    contactForm.addEventListener("submit", function (e) {
+
+        e.preventDefault();
+
+        const sendBtn = document.getElementById("send-btn");
+
+        sendBtn.disabled = true;
+
+        sendBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Sending...';
+
+        emailjs.sendForm(
+
+            "service_fk4y79j",
+
+            "template_cbdblep",
+
+            this
+
+        ).then(() => {
+
+            showToast("✅ Message sent successfully!", "success");
+
+            contactForm.reset();
+
+            sendBtn.disabled = false;
+
+            sendBtn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Send Message';
+
+        }).catch((error) => {
+
+            console.error("EmailJS Error:", error);
+
+            showToast("❌ Failed to send message.", "error");
+
+            sendBtn.disabled = false;
+
+            sendBtn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Send Message';
+
+        });
+
+    });
+
+}
